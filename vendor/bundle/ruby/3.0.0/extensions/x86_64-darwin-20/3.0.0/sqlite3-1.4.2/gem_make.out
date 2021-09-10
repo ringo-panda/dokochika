@@ -1,0 +1,79 @@
+current directory: /Users/haru/Dropbox/rails/working/dokochika/vendor/bundle/ruby/3.0.0/gems/sqlite3-1.4.2/ext/sqlite3
+/Users/haru/.rbenv/versions/3.0.2/bin/ruby -I /Users/haru/.rbenv/versions/3.0.2/lib/ruby/3.0.0 -r ./siteconf20210910-6342-yxsxn4.rb extconf.rb
+checking for sqlite3.h... yes
+checking for pthread_create() in -lpthread... yes
+checking for -ldl... yes
+checking for sqlite3_libversion_number() in -lsqlite3... yes
+checking for rb_proc_arity()... yes
+checking for rb_integer_pack()... yes
+checking for sqlite3_initialize()... yes
+checking for sqlite3_backup_init()... yes
+checking for sqlite3_column_database_name()... yes
+checking for sqlite3_enable_load_extension()... yes
+checking for sqlite3_load_extension()... yes
+checking for sqlite3_open_v2()... yes
+checking for sqlite3_prepare_v2()... yes
+checking for sqlite3_int64 in sqlite3.h... yes
+checking for sqlite3_uint64 in sqlite3.h... yes
+creating Makefile
+
+current directory: /Users/haru/Dropbox/rails/working/dokochika/vendor/bundle/ruby/3.0.0/gems/sqlite3-1.4.2/ext/sqlite3
+make DESTDIR\= clean
+
+current directory: /Users/haru/Dropbox/rails/working/dokochika/vendor/bundle/ruby/3.0.0/gems/sqlite3-1.4.2/ext/sqlite3
+make DESTDIR\=
+compiling aggregator.c
+compiling backup.c
+compiling database.c
+database.c:38:9: warning: unused variable 'flags' [-Wunused-variable]
+  VALUE flags;
+        ^
+database.c:109:18: warning: implicit conversion loses integer precision: 'long' to 'int' [-Wshorten-64-to-32]
+  return INT2NUM((long)sqlite3_total_changes(ctx->db));
+         ~~~~~~~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+database.c:150:67: warning: implicit conversion loses integer precision: 'long' to 'int' [-Wshorten-64-to-32]
+  VALUE result = rb_funcall(handle, rb_intern("call"), 1, INT2NUM((long)count));
+                                                          ~~~~~~~ ^~~~~~~~~~~
+database.c:395:18: warning: implicit conversion loses integer precision: 'long' to 'int' [-Wshorten-64-to-32]
+  return INT2NUM((long)sqlite3_errcode(ctx->db));
+         ~~~~~~~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+database.c:726:57: warning: incompatible function pointer types passing 'int (VALUE, int, char **, char **)' (aka 'int (unsigned long, int, char **, char **)') to parameter of type 'int (*)(void *, int, char **, char **)' [-Wincompatible-function-pointer-types]
+    status = sqlite3_exec(ctx->db, StringValuePtr(sql), hash_callback_function, callback_ary, &errMsg);
+                                                        ^~~~~~~~~~~~~~~~~~~~~~
+/usr/local/Cellar/sqlite/3.36.0/include/sqlite3.h:405:9: note: passing argument to parameter 'callback' here
+  int (*callback)(void*,int,char**,char**),  /* Callback function */
+        ^
+database.c:726:81: warning: incompatible integer to pointer conversion passing 'VALUE' (aka 'unsigned long') to parameter of type 'void *' [-Wint-conversion]
+    status = sqlite3_exec(ctx->db, StringValuePtr(sql), hash_callback_function, callback_ary, &errMsg);
+                                                                                ^~~~~~~~~~~~
+/usr/local/Cellar/sqlite/3.36.0/include/sqlite3.h:406:9: note: passing argument to parameter here
+  void *,                                    /* 1st argument to callback */
+        ^
+database.c:728:57: warning: incompatible function pointer types passing 'int (VALUE, int, char **, char **)' (aka 'int (unsigned long, int, char **, char **)') to parameter of type 'int (*)(void *, int, char **, char **)' [-Wincompatible-function-pointer-types]
+    status = sqlite3_exec(ctx->db, StringValuePtr(sql), regular_callback_function, callback_ary, &errMsg);
+                                                        ^~~~~~~~~~~~~~~~~~~~~~~~~
+/usr/local/Cellar/sqlite/3.36.0/include/sqlite3.h:405:9: note: passing argument to parameter 'callback' here
+  int (*callback)(void*,int,char**,char**),  /* Callback function */
+        ^
+database.c:728:84: warning: incompatible integer to pointer conversion passing 'VALUE' (aka 'unsigned long') to parameter of type 'void *' [-Wint-conversion]
+    status = sqlite3_exec(ctx->db, StringValuePtr(sql), regular_callback_function, callback_ary, &errMsg);
+                                                                                   ^~~~~~~~~~~~
+/usr/local/Cellar/sqlite/3.36.0/include/sqlite3.h:406:9: note: passing argument to parameter here
+  void *,                                    /* 1st argument to callback */
+        ^
+8 warnings generated.
+compiling exception.c
+compiling sqlite3.c
+compiling statement.c
+statement.c:351:18: warning: implicit conversion loses integer precision: 'long' to 'int' [-Wshorten-64-to-32]
+  return INT2NUM((long)sqlite3_column_count(ctx->st));
+         ~~~~~~~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+statement.c:400:18: warning: implicit conversion loses integer precision: 'long' to 'int' [-Wshorten-64-to-32]
+  return INT2NUM((long)sqlite3_bind_parameter_count(ctx->st));
+         ~~~~~~~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2 warnings generated.
+linking shared-object sqlite3/sqlite3_native.bundle
+
+current directory: /Users/haru/Dropbox/rails/working/dokochika/vendor/bundle/ruby/3.0.0/gems/sqlite3-1.4.2/ext/sqlite3
+make DESTDIR\= install
+/usr/bin/install -c -m 0755 sqlite3_native.bundle ./.gem.20210910-6342-sbh6ty/sqlite3
