@@ -9,14 +9,18 @@
 
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
     <%= stylesheet_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <script src="https://kit.fontawesome.com/9f56765ddb.js" crossorigin="anonymous"></script>
   </head>
 
   <body>
     <header>
-
+      <%= render 'layouts/navbar' %>
     </header>
-    <main>
-      <%= yield %>
+    <main class="mt-2">
+      <div class="container">
+        <%= render 'layouts/flash' %>
+        <%= yield %>
+      </div>
     </main>
     <footer>
 

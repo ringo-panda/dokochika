@@ -1,14 +1,33 @@
-<h2>Log in</h2>
+
+<div class="row mb-4">
+  <div class="col-sm-3">
+    <h2>ログイン</h2>
+  </div>
+</div>
 
 <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+
+  <div class="row mb-3">
+    <div class="form-label col-sm-3">
+      <%= f.label :email do %>
+        <span class="badge bg-danger">必須</span> メールアドレス
+      <% end %>
+    </div>
+    <div class="col-sm-5">
+      <%= f.email_field :email, autocomplete: "email", class:"form-control" %>
+    </div>
   </div>
 
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "current-password" %>
+  <div class="row mb-3">
+    <div class="form-label col-sm-3">
+      <%= f.label :password do %>
+        <span class="badge bg-danger">必須</span> パスワード
+      <% end %>
+    </div>
+    <div class="col-sm-5">
+    <%= f.password_field :password, autocomplete: "current-password",  class:"form-control" %>
+    </div>
   </div>
 
   <% if devise_mapping.rememberable? %>
@@ -18,9 +37,7 @@
     </div>
   <% end %>
 
-  <div class="actions">
-    <%= f.submit "Log in" %>
+  <div class="row mb-3">
+    <%= f.submit "ログイン", class:"btn btn-primary col-sm-4 offset-sm-3" %>
   </div>
 <% end %>
-
-<%= render "public/users/shared/links" %>

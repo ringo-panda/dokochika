@@ -1,0 +1,2 @@
+module Public::SpotsHelper
+end

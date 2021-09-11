@@ -1,2 +1,46 @@
-<h1>Public::Users#show</h1>
-<p>Find me in app/views/public/users/show.html.erb</p>
+<div class="row mt-5">
+  <div class="col-md-4">
+    <% if current_user.profile_image.attached? %>
+      <%= image_tag current_user.profile_image.variant(resize:'200x200'), class:"rounded-circle d-block mx-md-auto" %>
+    <% else %>
+      <%= image_tag 'no_image.png', size:'264x200', class:"rounded-circle d-block mx-md-auto" %>
+    <% end %>
+    <%= link_to " プロフィール編集", edit_users_path, class:"mt-md-4 btn btn-outline-secondary btn-lg fas fa-user-cog mx-md-auto d-block" %>
+  </div>
+  <div class="col-md-8">
+    <div class="row mb-5">
+      <div class="col-md-10 offset-md-1  border border-dark rounded">
+        <div class="table-responsive-sm mt-3">
+          <table class="table table-hover">
+            <tbody>
+              <tr>
+                <th>ユーザーID</th>
+                <td><%= current_user.user_id %></td>
+              </tr>
+              <tr>
+                <th>ニックネーム</th>
+                <td><%= current_user.username %></td>
+              </tr>
+              <tr>
+                <th>メールアドレス</th>
+                <td><%= current_user.email %></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="row mb-5">
+
+        <div class="card border-danger border-3 col-md-10 offset-md-1">
+          <div class="card-body">
+            <h5 class="card-title">退会する</h5>
+            <p class="card-text">退会すると保存されている情報は削除され、ログインができなくなります。</p>
+            <a href="#" class="btn btn-danger">退会</a>
+          </div>
+        </div>
+
+    </div>
+
+  </div>
+</div>

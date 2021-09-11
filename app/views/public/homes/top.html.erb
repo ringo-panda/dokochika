@@ -1,2 +1,11 @@
-<h1>Public::Homes#top</h1>
-<p>Find me in app/views/public/homes/top.html.erb</p>
+<div class="row mx-auto my-5">
+    <h4 class="text-sm-center">DOKOCHIKAはあなたが行きたい場所の中で最も近い場所を調べてくれます。</h4>
+    <h4 class="text-sm-center">利用には会員登録が必要です。</h4>
+</div>
+
+<div class="row mx-auto">
+  <%= link_to "新規登録", new_user_registration_path, class:"btn btn-success col-sm-6 offset-sm-3" %>
+</div>
+<div class="row mx-auto">
+  <%= link_to "ログイン", new_user_session_path, class:"btn btn-primary col-sm-6 offset-sm-3" %>
+</div>
