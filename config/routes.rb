@@ -1,43 +1,5 @@
 Rails.application.routes.draw do
 
-  namespace :admin do
-    get 'spots/new'
-    get 'spots/index'
-    get 'spots/create'
-    get 'spots/edit'
-    get 'spots/update'
-    get 'spots/destroy'
-    get 'spots/show'
-  end
-  namespace :public do
-    get 'spots/new'
-    get 'spots/index'
-    get 'spots/create'
-    get 'spots/edit'
-    get 'spots/update'
-    get 'spots/destroy'
-    get 'spots/show'
-  end
-  get 'spots/new'
-  get 'spots/index'
-  get 'spots/create'
-  get 'spots/edit'
-  get 'spots/update'
-  get 'spots/destroy'
-  get 'spots/show'
-  namespace :admin do
-    get 'lists/create'
-    get 'lists/update'
-    get 'lists/edit'
-    get 'lists/destroy'
-    get 'lists/index'
-  end
-  namespace :public do
-    get 'lists/create'
-    get 'lists/update'
-    get 'lists/edit'
-    get 'lists/destroy'
-  end
   #管理者向けルーティング
   namespace :admin do
     devise_for :admin_users, controllers: {
@@ -45,6 +7,8 @@ Rails.application.routes.draw do
       passwords: 'admin/admin_users/passwords'
     }, path: ""
     resources :users
+    resources :lists, only: [:create, :update, :edit, :destroy, :index]
+    resources :spots
   end
 
   #エンドユーザー向けルーティング
@@ -56,5 +20,8 @@ Rails.application.routes.draw do
     }, path: "user"
     root 'homes#top'
     resource :users, only: [:show, :edit, :update, :destroy], path: "mypage"
+    resources :lists, only: [:create, :update, :edit, :destroy, :show]
+    resources :spots
+
   end
 end

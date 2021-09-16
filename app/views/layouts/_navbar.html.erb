@@ -1,7 +1,7 @@
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
           <% if user_signed_in? %>
-            <%= link_to "DOKOCHIKA", users_path, class:"navbar-brand fs-2 far fa-compass text-info" %>
+            <%= link_to "DOKOCHIKA", new_spot_path, class:"navbar-brand fs-2 far fa-compass text-info" %>
           <% elsif admin_admin_user_signed_in? %>
             <%= link_to "DOKOCHIKA", admin_users_path, class:"navbar-brand fs-2 far fa-compass text-info" %>
           <% else %>
@@ -15,7 +15,7 @@
             <ul class="navbar-nav me-auto">
               <% if user_signed_in? %>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">行き先を登録</a>
+                  <%= link_to "行き先を登録", new_spot_path, class:"nav-link" %>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="#">近い場所を探す</a>
@@ -50,10 +50,10 @@
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                       <li>
-                        <a class="dropdown-item" href="#">マイページ</a>
+                        <%= link_to "マイページ", users_path, class:"dropdown-item" %>
                       </li>
                       <li>
-                        <a class="dropdown-item" href="#">プロフィール編集</a>
+                        <%= link_to "プロフィール編集", edit_users_path, class:"dropdown-item" %>
                       </li>
                       <li><hr class="dropdown-divider"></li>
                       <li>
