@@ -1,2 +1,17 @@
 <%= link_to "編集", edit_list_path(@list) %>
 <%= link_to "削除", list_path(@list), method: :delete %>
+
+<table>
+  <tr>
+    <th>店名</th>
+    <th>住所</th>
+    <th></th>
+  </tr>
+  <% @spots.each do |spot| %>
+    <tr>
+      <td><%= spot.name %></td>
+      <td><%= spot.formatted_address %></td>
+      <td><%= link_to "詳細", edit_spot_path(spot.id) %></td>
+    </tr>
+  <% end %>
+</table>

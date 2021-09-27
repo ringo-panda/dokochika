@@ -6,6 +6,8 @@ class User < ApplicationRecord
 
   has_one_attached :profile_image
   has_many :lists, dependent: :destroy
+  has_many :spots, dependent: :destroy
+  has_many :list_spots, dependent: :destroy
 
 
   private

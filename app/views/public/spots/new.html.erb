@@ -1,28 +1,11 @@
-<div class="row">
-  <div class="col-md-7">
-
-  </div>
-  <div class="col-md-5">
-    <div class="row">
-      <div class="col-md-12">
-        <div class="list-group">
-          <% @lists.each do |post| %>
-            <%= link_to list_path(post), class:"list-group-item d-flex justify-content-between align-items-center" do  %>
-              <%= post.name %>
-              <span class="badge bg-secondary rounded-pill">14</span>
-            <% end %>
-          <% end %>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12">
-        <%= form_with model:@list do |f| %>
-          <%= f.label :name, "リスト名", class:"form-label" %>
-          <%= f.text_field :name, class:"form-control" %>
-          <%= f.submit "保存する", class:"btn btn-primary" %>
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
+<%= form_with model:@spot,url:spots_path, local:true do |f| %>
+  <%= @result[:result][:name] %>
+  <%= @result[:result][:formatted_address] %>
+  <%= f.hidden_field :name, value:@result[:result][:name] %>
+  <%= f.hidden_field :formatted_address, value:@result[:result][:formatted_address] %>
+  <%= f.hidden_field :place_id, value:@place_id %>
+  <%= f.hidden_field :lat, value:@result[:result][:geometry][:location][:lat] %>
+  <%= f.hidden_field :lng, value:@result[:result][:geometry][:location][:lng] %>
+  <%= f.collection_check_boxes :lists, List.where(user_id:current_user.id), :id, :name, include_hidden: false %>
+  <%= f.submit "登録する", class:"btn btn-primary" %>
+<% end %>

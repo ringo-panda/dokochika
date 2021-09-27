@@ -20,8 +20,12 @@ Rails.application.routes.draw do
     }, path: "user"
     root 'homes#top'
     resource :users, only: [:show, :edit, :update, :destroy], path: "mypage"
-    resources :lists, only: [:create, :update, :edit, :destroy, :show]
-    resources :spots
+    resources :lists
+    resources :spots, expect: [:show, :destroy] do
+      collection do
+        get 'search'
+      end
+    end
 
   end
 end

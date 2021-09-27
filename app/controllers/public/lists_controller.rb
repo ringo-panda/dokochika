@@ -2,15 +2,24 @@ class Public::ListsController < ApplicationController
     before_action :authenticate_user!
     before_action :correct_user, only: [:show, :edit, :update, :destroy]
 
+  def new
+
+  end
+
+  def index
+    @lists = List.where(user_id:current_user.id)
+    @list = List.new
+  end
+
   def create
     @list = List.new(list_params)
     if @list.save
       flash[:notice] = "投稿に成功しました"
-      redirect_to new_spot_path
+      redirect_to lists_path
     else
       @lists = List.where(user_id:current_user.id)
       flash[:alert] = "投稿に失敗しました"
-      render 'spots/new'
+      render 'index'
     end
   end
 
@@ -20,6 +29,7 @@ class Public::ListsController < ApplicationController
 
   def show
     @list = List.find(params[:id])
+    @spots = @list.spots
   end
 
   def update
@@ -39,10 +49,10 @@ class Public::ListsController < ApplicationController
     @lists = List.where(user_id:current_user.id)
     if @list_destroy.destroy
       flash[:notice] = "削除に成功しました"
-      redirect_to new_spot_path
+      redirect_to lists_path
     else
       flash[:alert] = "削除に失敗しました"
-      render 'spots/new'
+      render 'index'
     end
   end
 

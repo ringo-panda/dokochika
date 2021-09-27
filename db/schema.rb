@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_11_173101) do
+ActiveRecord::Schema.define(version: 2021_09_25_103047) do
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -52,10 +52,29 @@ ActiveRecord::Schema.define(version: 2021_09_11_173101) do
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
   end
 
+  create_table "list_spots", force: :cascade do |t|
+    t.integer "user_id"
+    t.integer "list_id"
+    t.integer "spot_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
   create_table "lists", force: :cascade do |t|
     t.integer "user_id"
     t.string "name"
     t.boolean "is_allowed_edit"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "spots", force: :cascade do |t|
+    t.integer "user_id"
+    t.string "formatted_address"
+    t.text "name"
+    t.text "place_id"
+    t.decimal "lat"
+    t.decimal "lng"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

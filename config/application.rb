@@ -18,8 +18,10 @@ module Dokochika
     #
     config.time_zone = "Asia/Tokyo"
     # config.eager_load_paths << Rails.root.join("extras")
-    
+
     # デフォルトのlocaleを日本語(:ja)にする
     config.i18n.default_locale = :ja
+    #lib/以下のtask以外のファイルが読み込まれるようにする
+    config.paths.add 'lib', eager_load: true
   end
 end

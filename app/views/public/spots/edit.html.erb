@@ -1,2 +1,11 @@
-<h1>Public::Spots#edit</h1>
-<p>Find me in app/views/public/spots/edit.html.erb</p>
+<%= form_with model:@spot,url:spot_path, local:true do |f| %>
+  <%= @spot[:name] %>
+  <%= @spot[:formatted_address] %>
+  <%= f.hidden_field :name, value:@spot[:name] %>
+  <%= f.hidden_field :formatted_address, value:@spot[:formatted_address] %>
+  <%= f.hidden_field :place_id, value:@spot[:place_id] %>
+  <%= f.hidden_field :lat, value:@spot[:lat] %>
+  <%= f.hidden_field :lng, value:@spot[:lng] %>
+  <%= f.collection_check_boxes :lists, List.where(user_id:current_user.id), :id, :name, include_hidden: false %>
+  <%= f.submit "保存する", class:"btn btn-primary" %>
+<% end %>

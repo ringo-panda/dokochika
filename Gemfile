@@ -64,3 +64,6 @@ gem 'rails-i18n'
 
 #環境変数
 gem 'dotenv-rails'
+
+#アプリケーション内でHTTPリクエストを投げたい場合に使うクラス
+gem 'httpclient'

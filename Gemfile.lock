@@ -93,6 +93,7 @@ GEM
     ffi (1.15.4)
     globalid (0.5.2)
       activesupport (>= 5.0)
+    httpclient (2.8.3)
     i18n (1.8.10)
       concurrent-ruby (~> 1.0)
     image_processing (1.12.1)
@@ -231,6 +232,7 @@ DEPENDENCIES
   capybara (>= 3.26)
   devise
   dotenv-rails
+  httpclient
   image_processing (~> 1.2)
   jbuilder (~> 2.7)
   listen (~> 3.3)

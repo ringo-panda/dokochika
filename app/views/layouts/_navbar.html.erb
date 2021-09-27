@@ -15,10 +15,10 @@
             <ul class="navbar-nav me-auto">
               <% if user_signed_in? %>
                 <li class="nav-item">
-                  <%= link_to "行き先を登録", new_spot_path, class:"nav-link" %>
+                  <%= link_to "行き先を登録", spots_path, class:"nav-link" %>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">近い場所を探す</a>
+                  <%= link_to "リストを登録", lists_path, class:"nav-link" %>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="#">プランを作成する</a>
