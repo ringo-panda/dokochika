@@ -1,11 +1,220 @@
-<%= form_with model:@spot,url:spots_path, local:true do |f| %>
-  <%= @result[:result][:name] %>
-  <%= @result[:result][:formatted_address] %>
-  <%= f.hidden_field :name, value:@result[:result][:name] %>
-  <%= f.hidden_field :formatted_address, value:@result[:result][:formatted_address] %>
-  <%= f.hidden_field :place_id, value:@place_id %>
-  <%= f.hidden_field :lat, value:@result[:result][:geometry][:location][:lat] %>
-  <%= f.hidden_field :lng, value:@result[:result][:geometry][:location][:lng] %>
-  <%= f.collection_check_boxes :lists, List.where(user_id:current_user.id), :id, :name, include_hidden: false %>
-  <%= f.submit "登録する", class:"btn btn-primary" %>
-<% end %>
+<%= link_to "検索結果へ戻る", :back, class:"fas fa-arrow-left btn btn-lg btn-outline-secondary" %>
+<div class="row">
+  <div class="col-md-8 col-12">
+    <div class="card m-3">
+      <div class="card-body">
+        <h2 class="card-title "><%= @result[:result][:name] %></h2>
+        <h6 class="card-subtitle mb-2 text-muted"><%= translate_place_types(@result[:result][:types]) %></h6>
+        <p class="card-text">
+          <% if @result[:result][:user_ratings_total] == nil %>
+            <%= link_to "0", @result[:result][:url] %>
+          <% else %>
+            <%= link_to @result[:result][:user_ratings_total], @result[:result][:url] %>
+          <% end %>
+        件のレビュー</p>
+        <p class="card-text">平均評価:<%= @result[:result][:rating] %></p>
+        <div id="average-review-rating" class="mt-2" data-score=<%= @result[:result][:rating] %>></div>
+        <script>
+          $('#average-review-rating').raty({
+            size:16,
+            starOff: "<%= asset_path('star-off.png') %>",
+            starOn: "<%= asset_path('star-on.png') %>",
+            starHalf: "<%= asset_path('star-half.png') %>",
+            half: true,
+            readOnly: true,
+            score: function() {
+            return $(this).attr('data-score')
+            }
+          });
+        </script>
+        <%= link_to "Google Mapで見る", @result[:result][:url], class:"card-link" %>
+      </div>
+    </div>
+    <div id="map" class="mb-4"></div>
+    <script>
+      // Initialize and add the map
+      function initMap() {
+        const spot = { lat: <%= @result[:result][:geometry][:location][:lat] %>, lng: <%= @result[:result][:geometry][:location][:lng] %> };
+        // The map, center
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 16,
+          center: spot,
+        });
+        // The marker, positioned
+        const marker = new google.maps.Marker({
+          position: spot,
+          map: map,
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAP_API'] %>&callback=initMap&libraries=&v=weekly" async></script>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="abstract-tab" data-bs-toggle="tab" href="#abstract" role="tab" aria-controls="abstract" aria-selected="true">施設概要</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="image-tab" data-bs-toggle="tab" href="#image" role="tab" aria-controls="image" aria-selected="false">写真</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="review-tab" data-bs-toggle="tab" href="#review" role="tab" aria-controls="review" aria-selected="false">レビュー</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="abstract" role="tabpanel" aria-labelledby="abstract-tab">
+        <table class="table w-100">
+          <thead>
+            <tr>
+              <th scope="col" colspan="2"><%= @result[:result][:name] %>基本情報</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" style="width: 20%">施設名</th>
+              <td style="width: 80%"><%= @result[:result][:name] %></td>
+            </tr>
+            <tr>
+              <th scope="row">住所</th>
+              <td>
+                <%= @result[:result][:formatted_address] %>
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">電話番号</th>
+              <td><%= @result[:result][:formatted_phone_number] %></td>
+            </tr>
+            <tr>
+              <th scope="row">営業時間</th>
+              <td>
+                <% if @result[:result][:opening_hours].present? %>
+                  <% @result[:result][:opening_hours][:weekday_text].each do |day| %>
+                    <%= day %><br>
+                  <% end %>
+                <% end %>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tab-pane fade" id="image" role="tabpanel" aria-labelledby="image-tab">
+        <% if @result[:result][:photos].present? %>
+          <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              <div class="carousel-item active position-relative" data-bs-interval="10000">
+                <% @photographing_person = pick_up_url(@result[:result][:photos][0][:html_attributions][0]) %>
+                <%= link_to @photographing_person[:url] do %>
+                  <%= image_tag place_photo(@result[:result][:photos][0][:photo_reference]), class:"d-block w-100", height:450 %>
+                  <span class="text-white-50 position-absolute bottom-0 end-0">photo by <%= @photographing_person[:name] %></span>
+                <% end %>
+              </div>
+              <% if @result[:result][:photos].length > 2 %>
+                <% @result[:result][:photos][1..-1].each do |img| %>
+                  <div class="carousel-item position-relative" data-bs-interval="2000">
+                    <% @photographing_person = pick_up_url(img[:html_attributions][0]) %>
+                    <%= link_to @photographing_person[:url] do %>
+                      <%= image_tag place_photo(img[:photo_reference]), class:"d-block w-100", height:450 %>
+                      <span class="text-white-50 position-absolute bottom-0 end-0">photo by <%= @photographing_person[:name] %></span>
+                    <% end %>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+            <a class="carousel-control-prev" href="#carouselExampleInterval" role="button" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleInterval" role="button" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </a>
+          </div>
+        <% end %>
+      </div>
+      <div class="tab-pane fade" id="review" role="tabpanel" aria-labelledby="review-tab">
+        <% if @result[:result][:reviews].present? %>
+          <% @result[:result][:reviews].each_with_index do |review, i| %>
+            <div class="card w-100">
+              <div class="card-body">
+                <div class="d-flex">
+                  <%= link_to  review[:author_url]  do %>
+                    <%= image_tag review[:profile_photo_url], height:30, class:"mt-1 me-2" %>
+                  <% end %>
+                  <h5 class="p-2 card-title"><%= review[:author_name] %></h5>
+                </div>
+                <h6 class="card-subtitle mb-2 text-muted"><%= review[:relative_time_description] %></h6>
+                <p class="card-text"><%= review[:text] %></p>
+                <div id="average-review-rating-<%= i %>" data-score=<%= review[:rating] %>></div>
+                <script>
+                  $('#average-review-rating-<%= i %>').raty({
+                    size:16,
+                    starOff: "<%= asset_path('star-off.png') %>",
+                    starOn: "<%= asset_path('star-on.png') %>",
+                    starHalf: "<%= asset_path('star-half.png') %>",
+                    half: true,
+                    readOnly: true,
+                    score: function() {
+                    return $(this).attr('data-score')
+                    }
+                  });
+                </script>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 col-12">
+    <h4>このスポットをリストへ追加する</h4>
+    <%= form_with model:@spot,url:spots_path, local:true do |f| %>
+      <%= f.hidden_field :name, value:@result[:result][:name] %>
+      <%= f.hidden_field :formatted_address, value:@result[:result][:formatted_address] %>
+      <%= f.hidden_field :place_id, value:@place_id %>
+      <% if @result[:result][:photos].present? %>
+        <% @photographing_person = pick_up_url(@result[:result][:photos][0][:html_attributions][0]) %>
+        <%= f.hidden_field :place_photo_reference_id, value:@result[:result][:photos][0][:photo_reference] %>
+        <%= f.hidden_field :photographing_person_url, value:@photographing_person[:url] %>
+        <%= f.hidden_field :photographing_person_name, value:@photographing_person[:name] %>
+      <% end %>
+      <%= f.hidden_field :lat, value:@result[:result][:geometry][:location][:lat] %>
+      <%= f.hidden_field :lng, value:@result[:result][:geometry][:location][:lng] %>
+      <%= f.collection_check_boxes :lists, List.where(user_id:current_user.id), :id, :name, include_hidden: false do |b|%>
+        <div class="form-check">
+          <%= b.check_box  class:"form-check-input" %>
+          <%= b.text  %>
+        </div>
+      <% end %>
+      <%= f.submit "保存する", class:"btn btn-primary" %>
+    <% end %>
+    <div class="accordion mt-3" id="lists-accordion">
+      <% @lists.each_with_index do |list, i| %>
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="heading-<%= i %>">
+          <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-<%= i %>" aria-expanded="true" aria-controls="collapse-<%= i %>">
+            <%= list.name %>
+          </button>
+        </h2>
+        <div id="collapse-<%= i %>" class="accordion-collapse collapse <%= i == 0 ? "show" : "" %>" aria-labelledby="heading-<%= i %>" data-bs-parent="#lists-accordion">
+          <div class="accordion-body">
+            <table class="table w-100">
+              <tbody>
+                <% list.spots.each do |spot| %>
+                  <tr>
+                    <td style="width: 20%">
+                      <% if spot.place_photo_reference_id.present? %>
+                          <%= image_tag place_photo(spot.place_photo_reference_id), class:"card-img-top", height:40 %>
+                      <% else %>
+                        <%= image_tag 'no_image_place.jpg', class:"card-img-top", height:40 %>
+                      <% end %>
+                    </td>
+                    <td style="width: 80%"><%= spot.name %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <% end %>
+    </div>
+  </div>
+</div>

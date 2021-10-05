@@ -6,19 +6,12 @@ class Public::SpotsController < ApplicationController
 
   def new
     @place_id = params[:format]
-    url = "https://maps.googleapis.com/maps/api/place/details/json?parameters"
-    query = {
-      key:ENV['GOOGLE_MAP_API'],
-      place_id:@place_id,
-      language: "ja"
-    }
-    client = HTTPClient.new
-    response = client.get(url, query: query)
-    @result = JSON.parse(response.body, {symbolize_names: true})
+    @result = place_details(@place_id)
     if @result[:status] != "OK"
       flash[:alert] = @result[:error_message]
     end
     @spot = Spot.new
+    @lists = List.where(user_id:current_user.id)
   end
 
   def index
@@ -49,7 +42,12 @@ class Public::SpotsController < ApplicationController
 
   def edit
     @spot = Spot.find(params[:id])
-    @lists = @spot.lists.pluck(:id)
+    @result = place_details(@spot.place_id)
+    if @result[:status] != "OK"
+      flash[:alert] = @result[:error_message]
+    end
+    @lists = List.where(user_id:current_user.id)
+    @check_box_lists = @spot.lists.pluck(:id)
   end
 
   def update
@@ -60,14 +58,14 @@ class Public::SpotsController < ApplicationController
         flash[:notice] = "削除に成功しました"
       end
     else
-      new_lists.map(&:to_i)
+      new_lists = new_lists.map(&:to_i)
       old_lists = @spot.lists.pluck(:id)
       delete_lists = old_lists - new_lists
       create_lists = new_lists - old_lists
       if @spot.update(spot_params)
         if delete_lists.present?
           delete_lists.each do |list_id|
-            join = ListSpot.find_by(user_id:current_user, spot_id:@spot.id, list_id:list_id)
+            join = ListSpot.find_by(user_id:current_user.id, spot_id:@spot.id, list_id:list_id)
             if join.present?
               join.destroy
             end
@@ -75,7 +73,7 @@ class Public::SpotsController < ApplicationController
         end
         if create_lists.present?
           create_lists.each do |list_id|
-            join = ListSpot.new(user_id:current_user, spot_id:@spot.id, list_id:list_id)
+            join = ListSpot.new(user_id:current_user.id, spot_id:@spot.id, list_id:list_id)
             join.save
           end
         end
@@ -89,15 +87,7 @@ class Public::SpotsController < ApplicationController
 
 
   def search
-    url = "https://maps.googleapis.com/maps/api/place/textsearch/json?"
-    query = {
-      key:ENV['GOOGLE_MAP_API'],
-      query:params[:search_keyword],
-      language: "ja"
-    }
-    client = HTTPClient.new
-    response = client.get(url, query: query)
-    @result_spots = JSON.parse(response.body, {symbolize_names: true})
+    @result_spots = place_text_search(params[:search_keyword])
     if @result_spots[:status] != "OK"
       flash[:alert] = @result_spots[:error_message]
     end
@@ -107,7 +97,7 @@ class Public::SpotsController < ApplicationController
 
   private
   def spot_params
-    params.require(:spot).permit(:formatted_address, :name, :place_id, :lat, :lng).merge(user_id: current_user.id)
+    params.require(:spot).permit(:formatted_address, :name, :place_id, :place_photo_reference_id, :photographing_person_url, :photographing_person_name, :lat, :lng).merge(user_id: current_user.id)
   end
 
   def correct_user
@@ -116,6 +106,32 @@ class Public::SpotsController < ApplicationController
       flash[:alert] = "このURLは無効です"
       redirect_to root_path
     end
+  end
+
+  def place_details(place_id)
+    url = "https://maps.googleapis.com/maps/api/place/details/json?parameters"
+    query = {
+      key:ENV['GOOGLE_MAP_API'],
+      place_id:place_id,
+      language: "ja"
+    }
+    client = HTTPClient.new
+    response = client.get(url, query: query)
+    @result = JSON.parse(response.body, {symbolize_names: true})
+    return @result
+  end
+
+  def place_text_search(search_word)
+    url = "https://maps.googleapis.com/maps/api/place/textsearch/json?"
+    query = {
+      key:ENV['GOOGLE_MAP_API'],
+      query:search_word,
+      language: "ja"
+    }
+    client = HTTPClient.new
+    response = client.get(url, query: query)
+    @result_spots = JSON.parse(response.body, {symbolize_names: true})
+    return @result_spots
   end
 
 end

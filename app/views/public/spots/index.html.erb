@@ -1,32 +1,62 @@
-<div class="row">
+<div class="row mb-3">
   <%= form_with url:search_spots_path, method: :get, local: true do |f| %>
-    <%= f.text_field :search_keyword %>
-    <%= f.submit "検索", class:"btn btn-primary" %>
+    <%= f.text_field :search_keyword, placeholder: "スポットを検索", class:"offset-md-2 col-md-4 col-7 offset-col-2" %>
+    <%= f.submit "検索", class:"btn btn-primary col-md-1 ms-2 col-2" %>
   <% end %>
+</div>
 
+<div class="row">
   <% if @result_spots.blank? %>
     <% @spots.each do |spot| %>
-      <div class="card" style="width: 18rem;">
-        <div class="card-body">
-          <h5 class="card-title"><%= spot.name %></h5>
-          <p class="card-text"><%= spot.formatted_address %></p>
-          <%= link_to "編集", edit_spot_path(spot.id), class:"btn btn-success" %>
+      <div class="col-md-4 col-12 mb-3">
+        <div class="card h-100">
+        <div class="card-img position-relative">
+          <% if spot.place_photo_reference_id.present? %>
+            <%= link_to spot.photographing_person_url do %>
+              <%= image_tag place_photo(spot.place_photo_reference_id), class:"card-img-top", height:200 %>
+              <span class="text-white-50 position-absolute bottom-0 end-0">photo by <%= spot.photographing_person_name %></span>
+            <% end %>
+          <% else %>
+            <%= image_tag 'no_image_place.jpg', class:"card-img-top", height:200 %>
+          <% end %>
+        </div>
+          <div class="card-body">
+            <h5 class="card-title"><%= spot.name %></h5>
+            <p class="card-text"><%= spot.formatted_address %></p>
+          </div>
+          <div class="card-footer bg-transparent">
+            <%= link_to "編集", edit_spot_path(spot), class:"w-100 btn btn-primary btn-success" %>
+          </div>
         </div>
       </div>
     <% end %>
-  <% else %>
+  <% else%>
     <% @result_spots[:results].each do |spot| %>
-      <div class="card" style="width: 18rem;">
-        <%= image_tag place_photo(spot[:photos][0][:photo_reference]), class:"card-img-top", size: '262x175' %>
-        <div class="card-body">
-          <h5 class="card-title"><%= spot[:name] %></h5>
-          <p class="card-text"><%= spot[:formatted_address] %></p>
-          <% @spot = judge_present_place(spot[:place_id]) %>
-          <% if @spot == nil %>
-          <%= link_to "登録", new_spot_path(spot[:place_id]), class:"btn btn-primary" %>
+      <div class="col-md-4 col-12 mb-3">
+        <div class="card h-100">
+        <div class="card-img position-relative">
+          <% if spot[:photos].present? %>
+            <% @photographing_person = pick_up_url(spot[:photos][0][:html_attributions][0]) %>
+            <%= link_to @photographing_person[:url] do %>
+              <%= image_tag place_photo(spot[:photos][0][:photo_reference]), class:"card-img-top", height:200 %>
+              <span class="text-white-50 position-absolute bottom-0 end-0">photo by <%= @photographing_person[:name] %></span>
+            <% end %>
           <% else %>
-          <%= link_to "編集", edit_spot_path(@spot), class:"btn btn-success" %>
+            <%= image_tag 'no_image_place.jpg', class:"card-img-top", height:200 %>
           <% end %>
+        </div>
+          <div class="card-body">
+            <h5 class="card-title"><%= spot[:name] %></h5>
+            <p class="card-text"><%= spot[:formatted_address] %></p>
+          </div>
+          <div class="card-footer bg-transparent">
+            <% @spot = judge_present_place(spot[:place_id]) %>
+            <% if @spot == nil %>
+            <%= link_to "登録", new_spot_path(spot[:place_id]), class:"w-100 btn btn-primary btn-block" %>
+            <% else %>
+            <%= link_to "編集", edit_spot_path(@spot), class:"w-100 btn btn-primary btn-success" %>
+            <% end %>
+          </div>
         </div>
       </div>
     <% end %>

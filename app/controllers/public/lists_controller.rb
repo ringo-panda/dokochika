@@ -44,16 +44,22 @@ class Public::ListsController < ApplicationController
   end
 
   def destroy
-    @list_destroy = List.find(params[:id])
     @list = List.new
     @lists = List.where(user_id:current_user.id)
-    if @list_destroy.destroy
-      flash[:notice] = "削除に成功しました"
-      redirect_to lists_path
-    else
-      flash[:alert] = "削除に失敗しました"
-      render 'index'
+    delete_list = List.find(params[:id])
+    delete_spots = delete_list.spots
+    delete_spots.each do |spot|
+      list_spot = ListSpot.find_by(user_id:current_user.id, spot_id:spot.id, list_id:delete_list.id)
+      if list_spot.present?
+        list_spot.destroy
+      end
+      if spot.lists.length == 0
+        spot.destroy
+      end
     end
+    delete_list.destroy
+    flash[:notice] = "削除に成功しました"
+    redirect_to lists_path
   end
 
   private

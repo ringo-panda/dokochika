@@ -73,6 +73,9 @@ ActiveRecord::Schema.define(version: 2021_09_25_103047) do
     t.string "formatted_address"
     t.text "name"
     t.text "place_id"
+    t.text "place_photo_reference_id"
+    t.text "photographing_person_url"
+    t.string "photographing_person_name"
     t.decimal "lat"
     t.decimal "lng"
     t.datetime "created_at", precision: 6, null: false

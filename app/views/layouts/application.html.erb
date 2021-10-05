@@ -7,8 +7,8 @@
     <%= csp_meta_tag %>
 
 
-    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
-    <%= stylesheet_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= stylesheet_pack_tag 'application', media: 'all' %>
+    <%= javascript_pack_tag 'application' %>
     <script src="https://kit.fontawesome.com/9f56765ddb.js" crossorigin="anonymous"></script>
   </head>
 
@@ -22,8 +22,11 @@
         <%= yield %>
       </div>
     </main>
-    <footer>
-
+    <footer class="bg-secondary py-5 mt-5">
+      <h1 class="text-white text-center">DOKOCHIKA</h1>
+      <p class="text-white text-center">DOKOCHIKAはあなたの行きやすい場所を案内してくれるアプリです！</p>
+      <p class="text-white text-center">Copyright © 2021 ringo-panda. All Rights Reserved.</p>
+      <p class="text-white-50 text-center">このアプリのスポット、及び経路情報はGoogleとそのユーザーによって提供されています。</p>
     </footer>
   </body>
 </html>

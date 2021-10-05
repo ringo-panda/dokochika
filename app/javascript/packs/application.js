@@ -4,7 +4,7 @@
 // that code so it'll be compiled.
 
 import Rails from "@rails/ujs"
-import Turbolinks from "turbolinks"
+//import Turbolinks from "turbolinks"
 import * as ActiveStorage from "@rails/activestorage"
 import "channels"
 
@@ -12,6 +12,15 @@ import "channels"
 import 'bootstrap';
 import '../stylesheets/application';
 
+window.$ = window.jQuery = require('jquery');
+require('packs/raty');
+
+
+//requireの下に配置
+//=> javascript/packs/xxx.jsを読み込む
+import "./spot";
+import "./raty";
+
 Rails.start()
-Turbolinks.start()
+//Turbolinks.start()
 ActiveStorage.start()

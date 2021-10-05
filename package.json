@@ -10,7 +10,7 @@
     "bootstrap": "^5.1.1",
     "jquery": "^3.6.0",
     "popper.js": "^1.16.1",
-    "turbolinks": "^5.2.0",
+    "raty-js": "^3.1.1",
     "webpack": "^4.46.0",
     "webpack-cli": "^3.3.12"
   },
