@@ -168,7 +168,7 @@
     <%= form_with model:@spot,url:spot_path(@spot), local:true do |f| %>
       <%= f.hidden_field :name, value:@result[:result][:name] %>
       <%= f.hidden_field :formatted_address, value:@result[:result][:formatted_address] %>
-      <%= f.hidden_field :place_id, value:@place_id %>
+      <%= f.hidden_field :place_id, value:@spot.place_id %>
       <% if @result[:result][:photos].present? %>
         <% @photographing_person = pick_up_url(@result[:result][:photos][0][:html_attributions][0]) %>
         <%= f.hidden_field :place_photo_reference_id, value:@result[:result][:photos][0][:photo_reference] %>

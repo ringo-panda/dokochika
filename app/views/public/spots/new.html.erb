@@ -7,9 +7,9 @@
         <h6 class="card-subtitle mb-2 text-muted"><%= translate_place_types(@result[:result][:types]) %></h6>
         <p class="card-text">
           <% if @result[:result][:user_ratings_total] == nil %>
-            <%= link_to "0", @result[:result][:url] %>
+            <%= link_to "0", @result[:result][:url], target: :_blank %>
           <% else %>
-            <%= link_to @result[:result][:user_ratings_total], @result[:result][:url] %>
+            <%= link_to @result[:result][:user_ratings_total], @result[:result][:url], target: :_blank %>
           <% end %>
         件のレビュー</p>
         <p class="card-text">平均評価:<%= @result[:result][:rating] %></p>
@@ -27,7 +27,7 @@
             }
           });
         </script>
-        <%= link_to "Google Mapで見る", @result[:result][:url], class:"card-link" %>
+        <%= link_to "Google Mapで見る", @result[:result][:url], class:"card-link", target: :_blank %>
       </div>
     </div>
     <div id="map" class="mb-4"></div>
@@ -101,7 +101,7 @@
             <div class="carousel-inner">
               <div class="carousel-item active position-relative" data-bs-interval="10000">
                 <% @photographing_person = pick_up_url(@result[:result][:photos][0][:html_attributions][0]) %>
-                <%= link_to @photographing_person[:url] do %>
+                <%= link_to @photographing_person[:url], target: :_blank do %>
                   <%= image_tag place_photo(@result[:result][:photos][0][:photo_reference]), class:"d-block w-100", height:450 %>
                   <span class="text-white-50 position-absolute bottom-0 end-0">photo by <%= @photographing_person[:name] %></span>
                 <% end %>
@@ -110,7 +110,7 @@
                 <% @result[:result][:photos][1..-1].each do |img| %>
                   <div class="carousel-item position-relative" data-bs-interval="2000">
                     <% @photographing_person = pick_up_url(img[:html_attributions][0]) %>
-                    <%= link_to @photographing_person[:url] do %>
+                    <%= link_to @photographing_person[:url], target: :_blank do %>
                       <%= image_tag place_photo(img[:photo_reference]), class:"d-block w-100", height:450 %>
                       <span class="text-white-50 position-absolute bottom-0 end-0">photo by <%= @photographing_person[:name] %></span>
                     <% end %>

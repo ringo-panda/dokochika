@@ -20,7 +20,13 @@ Rails.application.routes.draw do
     }, path: "user"
     root 'homes#top'
     resource :users, only: [:show, :edit, :update, :destroy], path: "mypage"
-    resources :lists
+    resources :lists do
+      resource :directions, only: [:index] do
+        collection do
+          get 'calculate'
+        end
+      end
+    end
     resources :spots, expect: [:show, :destroy] do
       collection do
         get 'search'

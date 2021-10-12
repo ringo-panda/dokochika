@@ -3,6 +3,21 @@ module ApplicationHelper
     return "https://maps.googleapis.com/maps/api/place/photo?photo_reference=#{photo_key}&maxwidth=1000&key=#{ENV['GOOGLE_MAP_API']}"
   end
 
+  def make_dir_url(param, place_id, mode, location)
+    origin = "origin=" + param[:lat] + "%2C" + param[:lng]
+    destination = "destination=" + location[:lat].to_s + "%2C" + location[:lng].to_s
+    destination_place_id = "destination_place_id=" + place_id
+    travelmode = "travelmode=" + mode
+    url = "https://www.google.com/maps/dir/?api=1&" + origin + "&" + destination + "&" + destination_place_id + "&" + travelmode
+    return url
+  end
+
+  def calc_arrival_time(departure_time, value)
+    arrival_time_serial_num = departure_time + value
+    arrival_time = Time.zone.at(arrival_time_serial_num).strftime('%m/%d %H時%M分着')
+    return arrival_time
+  end
+
   def judge_present_place(place_id)
     @spot = Spot.find_by(user_id:current_user.id, place_id:place_id)
     if @spot.present?
@@ -17,6 +32,50 @@ module ApplicationHelper
     @photographing_person[:url] = @photographing_person[:url].slice(@photographing_person[:url].index("=")+2,@photographing_person[:url].index(">")-(@photographing_person[:url].index("=")+3))
     @photographing_person[:name] = @photographing_person[:name].slice(@photographing_person[:name].index(">")+1,@photographing_person[:name].rindex("<")-(@photographing_person[:name].index(">")+1))
     return @photographing_person
+  end
+
+  def place_details(place_id)
+    url = "https://maps.googleapis.com/maps/api/place/details/json?parameters"
+    query = {
+      key:ENV['GOOGLE_MAP_API'],
+      place_id:place_id,
+      language: "ja"
+    }
+    client = HTTPClient.new
+    response = client.get(url, query: query)
+    @result = JSON.parse(response.body, {symbolize_names: true})
+    return @result
+  end
+
+  def judge_place_open(result)
+    @place_opening_status = {status:"", color:"red", time:""}
+    if result[:result][:business_status] == "CLOSED_PERMANENTLY"
+      @place_opening_status[:status] = "閉業"
+    elsif result[:result][:business_status] == "CLOSED_TEMPORARILY"
+      @place_opening_status[:status] = "臨時休業"
+    else
+      if result[:result][:opening_hours].present?
+        if result[:result][:opening_hours][:open_now]
+          @place_opening_status[:status] = "営業中"
+          @place_opening_status[:color] = "green"
+          if Date.today.wday == 0
+            @place_opening_status[:time] = result[:result][:opening_hours][:weekday_text][6]
+          else
+            @place_opening_status[:time] = result[:result][:opening_hours][:weekday_text][Date.today.wday-1]
+          end
+        else
+          @place_opening_status[:status] = "営業時間外"
+          if Date.today.wday == 0
+            @place_opening_status[:time] = result[:result][:opening_hours][:weekday_text][6]
+          else
+            @place_opening_status[:time] = result[:result][:opening_hours][:weekday_text][Date.today.wday-1]
+          end
+        end
+      else
+        @place_opening_status[:status] = "営業時間を取得できませんでした。"
+      end
+    end
+    return @place_opening_status
   end
 
   def translate_place_types(en_types)
