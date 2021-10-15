@@ -1,0 +1,165 @@
+<div id="map-sidebar"></div>
+<script>
+let map, autocomplete, marker, infoWindow;
+let center = { lat: 35.680, lng: 139.767 };
+
+function initMap() {
+  //マップの初期設定
+  let lat = Number($("#departure_lat").val());
+  let lng = Number($("#departure_lng").val());
+  if(lat != null && lng != null) {
+    center.lat = lat;
+    center.lng = lng;
+  }
+  map = new google.maps.Map(document.getElementById("map-sidebar"), {
+    center: center,
+    zoom: 15,
+  });
+  infoWindow = new google.maps.InfoWindow();
+  marker = new google.maps.Marker({
+    position: center,
+    map: map,
+  });
+
+  //現在地の取得
+  const btnGetPlace = document.getElementById("btn-get-place");
+  btnGetPlace.classList.add("custom-map-control-button");
+  btnGetPlace.addEventListener("click", () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          let pos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          marker.setMap(null);
+          marker = new google.maps.Marker({
+            position: pos,
+            map: map,
+          });
+          map.setCenter(pos);
+          $("#autocomplete").val(pos.lat + " " + pos.lng);
+          $("#departure_lat").val(pos.lat);
+          $("#departure_lng").val(pos.lng);
+        },
+        () => {
+          handleLocationError(true, infoWindow, map.getCenter());
+        }
+      );
+    } else {
+      handleLocationError(false, infoWindow, map.getCenter());
+    }
+  });
+
+
+  //オートコンプリート機能
+  autocomplete = new google.maps.places.Autocomplete(
+    document.getElementById('autocomplete'),
+    {
+      types: ['geocode','establishment'],
+      componentRestrictions: {'country': ['jp']},
+      fields: ['place_id', 'geometry', 'name']
+    }
+  );
+  autocomplete.addListener('place_changed', onPlaceChanged);
+}
+
+//現在地取得のエラー処理
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+  infoWindow.setPosition(pos);
+  infoWindow.setContent(
+    browserHasGeolocation
+      ? "Error: ジオロケーションサービスの利用に失敗しました."
+      : "Error: あなたのブラウザはジオロケーションサービスに対応していません."
+  );
+  infoWindow.open(map);
+}
+
+//オートコンプリートで場所が選択された際の挙動
+function onPlaceChanged() {
+  var place = autocomplete.getPlace();
+  if(!place.geometry) {
+    // User did not select a prediction; reset input field
+    document.getElementById('autocomplete').placeholder = '住所、施設名';
+  } else {
+    let pos = place.geometry.location;
+    marker.setMap(null);
+    marker = new google.maps.Marker({
+      position: pos,
+      map: map,
+    });
+    map.setCenter(pos);
+    $("#departure_lat").val(pos.lat);
+    $("#departure_lng").val(pos.lng);
+  }
+}
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAP_API'] %>&libraries=places&callback=initMap"></script>
+
+<div class="row g-2">
+  <%= form_with url:calculate_list_directions_path(list), method: :get do |f| %>
+    <button class="btn btn-outline-primary my-3 col-12" type="button" id="btn-get-place">現在地を取得</button>
+    <div class="mb-2">
+      <%= f.label :departure_place, "出発地を入力", for:"autocomplete", class:"form-label" %>
+      <% if param.present? %>
+        <%= f.search_field :departure_place , id:"autocomplete", class:"form-control", placeholder:"住所、施設名", value:param[:departure_place] %>
+      <% else %>
+        <%= f.search_field :departure_place , id:"autocomplete", class:"form-control", placeholder:"住所、施設名" %>
+      <% end %>
+    </div>
+    <div class="mb-2">
+      <%= f.label :departure_datetime, "出発日時", for:"departure_datetime", class:"form-label" %>
+      <% if param.present? %>
+        <% if param[:departure_datetime].present? %>
+          <%= f.datetime_field :departure_datetime, value:param[:departure_datetime], id:"departure_datetime", class:"form-control" %>
+        <% end %>
+      <% else %>
+        <%= f.datetime_field :departure_datetime, id:"departure_datetime", class:"form-control" %>
+      <% end %>
+    </div>
+    <div class="form-check form-switch mb-2">
+      <% if param.present? && param[:avoid_tolls] == "1" %>
+        <%= f.check_box :avoid_tolls, class:"form-check-input", checked:true %>
+      <% else %>
+        <%= f.check_box :avoid_tolls, class:"form-check-input" %>
+      <% end %>
+      <%= f.label "有料道路を使わない", class:"form-check-label" %>
+    </div>
+    <div class="form-check form-switch mb-2">
+      <% if param.present? && param[:avoid_highways] == "1" %>
+        <%= f.check_box :avoid_highways, class:"form-check-input", checked:true %>
+      <% else %>
+        <%= f.check_box :avoid_highways, class:"form-check-input" %>
+      <% end %>
+      <%= f.label "高速道路を使わない", class:"form-check-label" %>
+    </div>
+    <div class="form-check form-switch mb-2">
+      <% if param.present? && param[:avoid_ferries] == "1" %>
+        <%= f.check_box :avoid_ferries, class:"form-check-input", checked:true %>
+      <% else %>
+        <%= f.check_box :avoid_ferries, class:"form-check-input" %>
+      <% end %>
+      <%= f.label "フェリーを使わない", class:"form-check-label" %>
+    </div>
+    <div class="mb-2">
+      <%= f.label :lat, "緯度(自動入力)", for:"departure_lat", class:"form-label" %>
+      <% if param.present? %>
+        <%= f.text_field :lat, value:param[:lat].to_f, id:"departure_lat", readonly: true, class:"form-control" %>
+      <% else %>
+        <%= f.text_field :lat, id:"departure_lat", readonly: true, class:"form-control" %>
+      <% end %>
+    </div>
+    <div class="mb-3">
+      <%= f.label :lng, "経度(自動入力)", for:"departure_lng", class:"form-label" %>
+      <% if param.present? %>
+        <%= f.text_field :lng, value:param[:lng].to_f, id:"departure_lng", readonly: true, class:"form-control" %>
+      <% else %>
+        <%= f.text_field :lng, id:"departure_lng", readonly: true, class:"form-control" %>
+      <% end %>
+    </div>
+    <div class="mb-3">
+    <%= f.submit "所要時間を一括計算する", class:"btn btn-primary col-12" %>
+    <div class="form-text text-danger">※出発地は自動入力された緯度、経度を元に計算されます。</div>
+    </div>
+  <% end %>
+</div>
