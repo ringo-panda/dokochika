@@ -1,0 +1,38 @@
+      <% place = place_details(result[:geocoded_waypoints][1][:place_id]) %>
+      <div class="card me-5 ms-2 my-3">
+        <h5 class="card-header">
+          <% if i == 0 %>
+            <%= image_tag 'first_crown.png', width:30 %>
+          <% elsif i == 1 %>
+            <%= image_tag 'second_crown.png', width:30 %>
+          <% elsif i == 2 %>
+            <%= image_tag 'third_crown.png', width:30 %>
+          <% end %>
+          <%= result[:routes][0][:legs][0][:duration][:text] %>（
+          <%= result[:routes][0][:legs][0][:distance][:text] %>）
+
+        </h5>
+        <div class="card-body">
+          <h5 class="card-title">
+          <%= link_to place[:result][:name], place[:result][:url], class:"text-reset", target: :_blank %>
+          </h5>
+          <p class="card-text"><small class="text-muted"><%= translate_place_types(place[:result][:types]) %></small></p>
+          <% @place_opening_status = judge_place_open(place) %>
+          <% if @place_opening_status[:color] == "green" %>
+            <p class="card-text text-success">
+              <%= @place_opening_status[:status] %>
+              <br>
+              <%= @place_opening_status[:time] %>
+            </p>
+          <% elsif @place_opening_status[:color] == "red" %>
+            <p class="card-text text-danger">
+              <%= @place_opening_status[:status] %>
+              <% if @place_opening_status[:time].present? %>
+                <br>
+                <%= @place_opening_status[:time] %>
+              <% end %>
+            </p>
+          <% end %>
+          <%= link_to "Google Mapで経路を見る", make_dir_url(param, result[:geocoded_waypoints][1][:place_id], mode, place[:result][:geometry][:location]), class:"card-link", target: :_blank %>
+        </div>
+      </div>

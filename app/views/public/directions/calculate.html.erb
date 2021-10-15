@@ -1,134 +1,29 @@
+<!-- Modal -->
+<div class="modal fade" id="editListName" tabindex="-1" aria-labelledby="editListNameLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <%= form_with model:@list do |f| %>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editListNameLabel">リスト名を変更</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <%= f.text_field :name, class:"form-control", placeholder:"リスト名を入力" %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+          <%= f.submit "保存する", class:"btn btn-primary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+
 <div class="row">
   <div class="col-md-4 order-md-last">
     <% if @list.spots.present? %>
-      <div id="map-sidebar"></div>
-      <%= form_with url:calculate_list_directions_path(@list), method: :get do |f| %>
-        <button class="btn btn-outline-primary" type="button" id="btn-get-place">現在地を取得</button>
-        <%= f.search_field :departure_place , id:"autocomplete", class:"form-control", placeholder:"出発地を入力", value:@param[:departure_place] %>
-        <%= f.label "出発日時" %>
-        <% if @param[:departure_datetime].present? %>
-          <%= f.datetime_field :departure_datetime, value:@param[:departure_datetime] %>
-        <% end %>
-        <div class="form-check form-switch">
-          <% if @param[:avoid_tolls] == "1" %>
-            <%= f.check_box :avoid_tolls, class:"form-check-input", checked:true %>
-          <% else %>
-            <%= f.check_box :avoid_tolls, class:"form-check-input" %>
-          <% end %>
-          <%= f.label "有料道路を使わない", class:"form-check-label" %>
-        </div>
-        <div class="form-check form-switch">
-          <% if @param[:avoid_highways] == "1" %>
-            <%= f.check_box :avoid_highways, class:"form-check-input", checked:true %>
-          <% else %>
-            <%= f.check_box :avoid_highways, class:"form-check-input" %>
-          <% end %>
-          <%= f.label "高速道路を使わない", class:"form-check-label" %>
-        </div>
-        <div class="form-check form-switch">
-          <% if @param[:avoid_ferries] == "1" %>
-            <%= f.check_box :avoid_ferries, class:"form-check-input", checked:true %>
-          <% else %>
-            <%= f.check_box :avoid_ferries, class:"form-check-input" %>
-          <% end %>
-          <%= f.label "フェリーを使わない", class:"form-check-label" %>
-        </div>
-        <%= f.text_field :lat, id:"departure_lat", readonly: true, class:"form-control", value:@param[:lat].to_f  %>
-        <%= f.text_field :lng, id:"departure_lng", readonly: true, class:"form-control", value:@param[:lng].to_f %>
-        <%= f.submit "所要時間を一括計算する", class:"btn btn-primary" %>
-      <% end %>
-      <script>
-      let map, autocomplete, marker, infoWindow;
-      let center = { lat: 35.680, lng: 139.767 };
-
-      function initMap() {
-        //マップの初期設定
-        center.lat = Number($("#departure_lat").val());
-        center.lng = Number($("#departure_lng").val());
-        map = new google.maps.Map(document.getElementById("map-sidebar"), {
-          center: center,
-          zoom: 15,
-        });
-        infoWindow = new google.maps.InfoWindow();
-        marker = new google.maps.Marker({
-          position: center,
-          map: map,
-        });
-
-        //現在地の取得
-        const btnGetPlace = document.getElementById("btn-get-place");
-        btnGetPlace.classList.add("custom-map-control-button");
-        btnGetPlace.addEventListener("click", () => {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              (position) => {
-                let pos = {
-                  lat: position.coords.latitude,
-                  lng: position.coords.longitude,
-                };
-                marker.setMap(null);
-                marker = new google.maps.Marker({
-                  position: pos,
-                  map: map,
-                });
-                map.setCenter(pos);
-                $("#autocomplete").val(pos.lat + " " + pos.lng);
-                $("#departure_lat").val(pos.lat);
-                $("#departure_lng").val(pos.lng);
-              },
-              () => {
-                handleLocationError(true, infoWindow, map.getCenter());
-              }
-            );
-          } else {
-            handleLocationError(false, infoWindow, map.getCenter());
-          }
-        });
-
-
-        //オートコンプリート機能
-        autocomplete = new google.maps.places.Autocomplete(
-          document.getElementById('autocomplete'),
-          {
-            types: ['geocode','establishment'],
-            componentRestrictions: {'country': ['jp']},
-            fields: ['place_id', 'geometry', 'name']
-          }
-        );
-        autocomplete.addListener('place_changed', onPlaceChanged);
-      }
-
-      //現在地取得のエラー処理
-      function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-        infoWindow.setPosition(pos);
-        infoWindow.setContent(
-          browserHasGeolocation
-            ? "Error: ジオロケーションサービスの利用に失敗しました."
-            : "Error: あなたのブラウザはジオロケーションサービスに対応していません."
-        );
-        infoWindow.open(map);
-      }
-
-      //オートコンプリートで場所が選択された際の挙動
-      function onPlaceChanged() {
-        var place = autocomplete.getPlace();
-        if(!place.geometry) {
-          // User did not select a prediction; reset input field
-          document.getElementById('autocomplete').placeholder = '出発地を入力';
-        } else {
-          let pos = place.geometry.location;
-          marker.setMap(null);
-          marker = new google.maps.Marker({
-            position: pos,
-            map: map,
-          });
-          map.setCenter(pos);
-          $("#departure_lat").val(pos.lat);
-          $("#departure_lng").val(pos.lng);
-        }
-      }
-      </script>
-      <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAP_API'] %>&libraries=places&callback=initMap"></script>
+      <%= render 'calc_sidebar', list:@list, param:@param %>
     <% end %>
   </div>
   <div class="col-md-8 p-3">
@@ -141,9 +36,10 @@
           リストの設定 <i class="fas fa-cog"></i>
         </button>
         <ul class="dropdown-menu">
-          <li><%= link_to "編集する", edit_list_path(@list.id), class:"dropdown-item" %></li>
+          <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editListName">リスト名を変更する</a>
+          </li>
           <li><hr class="dropdown-divider"></li>
-          <li><%= link_to "削除する", list_path(@list.id), method: :delete, data: {confirm: "本当に削除しますか？"}, class:"dropdown-item" %></li>
+          <li><%= link_to "リストを削除する", list_path(@list.id), method: :delete, data: {confirm: "本当に削除しますか？"}, class:"dropdown-item" %></li>
         </ul>
       </div>
     </div>
@@ -152,143 +48,56 @@
         <h2 class="card-title "><%= @list.name %></h2>
       </div>
     </div>
-<ul class="nav nav-tabs" id="routeTab" role="tablist">
-  <li class="nav-item" role="presentation">
-    <a class="nav-link active" id="route-driving-tab" data-bs-toggle="tab" href="#route-driving" role="tab" aria-controls="route-driving" aria-selected="true"><i class="fas fa-car"></i> 最速<%= @driving_results_sort[0][:routes][0][:legs][0][:duration_in_traffic][:text] %></a>
-  </li>
-  <li class="nav-item" role="presentation">
-    <a class="nav-link" id="route-bicycling-tab" data-bs-toggle="tab" href="#route-bicycling" role="tab" aria-controls="route-bicycling" aria-selected="false"><i class="fas fa-biking"></i> 最速<%= @bicycling_results_sort[0][:routes][0][:legs][0][:duration][:text] %></a>
-  </li>
-  <li class="nav-item" role="presentation">
-    <a class="nav-link" id="route-walking-tab" data-bs-toggle="tab" href="#route-walking" role="tab" aria-controls="route-walking" aria-selected="false"><i class="fas fa-walking"></i> 最速<%= @walking_results_sort[0][:routes][0][:legs][0][:duration][:text] %></a>
-  </li>
-</ul>
-<div class="tab-content" id="myTabContent">
-  <div class="tab-pane fade show active" id="route-driving" role="tabpanel" aria-labelledby="route-driving-tab">
-    <% @driving_results_sort.each_with_index do |result, i| %>
-      <% place = place_details(result[:geocoded_waypoints][1][:place_id]) %>
-      <div class="card me-5 ms-2 my-3">
-        <h5 class="card-header">
-          <% if i == 0 %>
-            <%= image_tag 'first_crown.png', width:30 %>
-          <% elsif i == 1 %>
-            <%= image_tag 'second_crown.png', width:30 %>
-          <% elsif i == 2 %>
-            <%= image_tag 'third_crown.png', width:30 %>
-          <% end %>
-          <%= result[:routes][0][:legs][0][:duration_in_traffic][:text] %>（
-          <%= result[:routes][0][:legs][0][:distance][:text] %>）
-
-        </h5>
-        <div class="card-body">
-          <h5 class="card-title">
-          <%= link_to place[:result][:name], place[:result][:url], class:"text-reset", target: :_blank %>
-          </h5>
-          <p class="card-text"><small class="text-muted"><%= translate_place_types(place[:result][:types]) %></small></p>
-          <% @place_opening_status = judge_place_open(place) %>
-          <% if @place_opening_status[:color] == "green" %>
-            <p class="card-text text-success">
-              <%= @place_opening_status[:status] %>
-              <br>
-              <%= @place_opening_status[:time] %>
-            </p>
-          <% elsif @place_opening_status[:color] == "red" %>
-            <p class="card-text text-danger">
-              <%= @place_opening_status[:status] %>
-              <% if @place_opening_status[:time].present? %>
-                <br>
-                <%= @place_opening_status[:time] %>
-              <% end %>
-            </p>
-          <% end %>
-          <%= link_to "Google Mapで経路を見る", make_dir_url(@param, result[:geocoded_waypoints][1][:place_id], "driving", place[:result][:geometry][:location]), class:"card-link", target: :_blank %>
-        </div>
-      </div>
-    <% end %>
+    <ul class="nav nav-tabs" id="routeTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="route-driving-tab" data-bs-toggle="tab" href="#route-driving" role="tab" aria-controls="route-driving" aria-selected="true">
+        <% if @driving_results_sort.present? %>
+        <i class="fas fa-car"></i> 最速<%= @driving_results_sort[0][:routes][0][:legs][0][:duration][:text] %>
+        <% else %>
+        <i class="fas fa-car"></i> 該当なし
+        <% end %>
+        </a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="route-bicycling-tab" data-bs-toggle="tab" href="#route-bicycling" role="tab" aria-controls="route-bicycling" aria-selected="false">
+        <% if @bicycling_results_sort.present? %>
+        <i class="fas fa-biking"></i> 最速<%= @bicycling_results_sort[0][:routes][0][:legs][0][:duration][:text] %>
+        <% else %>
+        <i class="fas fa-biking"></i> 該当なし
+        <% end %>
+        </a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="route-walking-tab" data-bs-toggle="tab" href="#route-walking" role="tab" aria-controls="route-walking" aria-selected="false">
+        <% if @walking_results_sort.present? %>
+        <i class="fas fa-walking"></i> 最速<%= @walking_results_sort[0][:routes][0][:legs][0][:duration][:text] %>
+        <% else %>
+        <i class="fas fa-walking"></i> 該当なし
+        <% end %>
+        </a>
+      </li>
+    </ul>
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="route-driving" role="tabpanel" aria-labelledby="route-driving-tab">
+      <% if @driving_results_sort.present? %>
+        <% @driving_results_sort.each_with_index do |result, i| %>
+        <%= render 'card', result:result, i:i, param:@param, mode:"driving" %>
+        <% end %>
+      <% end %>
+    </div>
+    <div class="tab-pane fade" id="route-bicycling" role="tabpanel" aria-labelledby="route-bicycling-tab">
+      <% if @bicycling_results_sort.present? %>
+        <% @bicycling_results_sort.each_with_index do |result, i| %>
+        <%= render 'card', result:result, i:i, param:@param, mode:"bicycling" %>
+        <% end %>
+      <% end %>
+    </div>
+    <div class="tab-pane fade" id="route-walking" role="tabpanel" aria-labelledby="route-walking-tab">
+      <% if @walking_results_sort.present? %>
+        <% @walking_results_sort.each_with_index do |result, i| %>
+        <%= render 'card', result:result, i:i, param:@param, mode:"walking" %>
+        <% end %>
+      <% end %>
+    </div>
   </div>
-  <div class="tab-pane fade" id="route-bicycling" role="tabpanel" aria-labelledby="route-bicycling-tab">
-    <% @bicycling_results_sort.each_with_index do |result, i| %>
-      <% place = place_details(result[:geocoded_waypoints][1][:place_id]) %>
-      <div class="card me-5 ms-2 my-3">
-        <h5 class="card-header">
-          <% if i == 0 %>
-            <%= image_tag 'first_crown.png', width:30 %>
-          <% elsif i == 1 %>
-            <%= image_tag 'second_crown.png', width:30 %>
-          <% elsif i == 2 %>
-            <%= image_tag 'third_crown.png', width:30 %>
-          <% end %>
-          <%= result[:routes][0][:legs][0][:duration][:text] %>（
-          <%= result[:routes][0][:legs][0][:distance][:text] %>）
-        </h5>
-        <div class="card-body">
-          <h5 class="card-title">
-          <%= link_to place[:result][:name], place[:result][:url], class:"text-reset", target: :_blank %>
-          </h5>
-          <p class="card-text"><small class="text-muted"><%= translate_place_types(place[:result][:types]) %></small></p>
-          <% @place_opening_status = judge_place_open(place) %>
-          <% if @place_opening_status[:color] == "green" %>
-            <p class="card-text text-success">
-              <%= @place_opening_status[:status] %>
-              <br>
-              <%= @place_opening_status[:time] %>
-            </p>
-          <% elsif @place_opening_status[:color] == "red" %>
-            <p class="card-text text-danger">
-              <%= @place_opening_status[:status] %>
-              <% if @place_opening_status[:time].present? %>
-                <br>
-                <%= @place_opening_status[:time] %>
-              <% end %>
-            </p>
-          <% end %>
-          <%= link_to "Google Mapで経路を見る", make_dir_url(@param, result[:geocoded_waypoints][1][:place_id], "bicycling", place[:result][:geometry][:location]), class:"card-link", target: :_blank %>
-        </div>
-      </div>
-    <% end %>
-  </div>
-  <div class="tab-pane fade" id="route-walking" role="tabpanel" aria-labelledby="route-walking-tab">
-    <% @walking_results_sort.each_with_index do |result, i| %>
-      <% place = place_details(result[:geocoded_waypoints][1][:place_id]) %>
-      <div class="card me-5 ms-2 my-3">
-        <h5 class="card-header">
-          <% if i == 0 %>
-            <%= image_tag 'first_crown.png', width:30 %>
-          <% elsif i == 1 %>
-            <%= image_tag 'second_crown.png', width:30 %>
-          <% elsif i == 2 %>
-            <%= image_tag 'third_crown.png', width:30 %>
-          <% end %>
-          <%= result[:routes][0][:legs][0][:duration][:text] %>（
-          <%= result[:routes][0][:legs][0][:distance][:text] %>）
-        </h5>
-        <div class="card-body">
-          <h5 class="card-title">
-          <%= link_to place[:result][:name], place[:result][:url], class:"text-reset", target: :_blank %>
-          </h5>
-          <p class="card-text"><small class="text-muted"><%= translate_place_types(place[:result][:types]) %></small></p>
-          <% @place_opening_status = judge_place_open(place) %>
-          <% if @place_opening_status[:color] == "green" %>
-            <p class="card-text text-success">
-              <%= @place_opening_status[:status] %>
-              <br>
-              <%= @place_opening_status[:time] %>
-            </p>
-          <% elsif @place_opening_status[:color] == "red" %>
-            <p class="card-text text-danger">
-              <%= @place_opening_status[:status] %>
-              <% if @place_opening_status[:time].present? %>
-                <br>
-                <%= @place_opening_status[:time] %>
-              <% end %>
-            </p>
-          <% end %>
-          <%= link_to "Google Mapで経路を見る", make_dir_url(@param, result[:geocoded_waypoints][1][:place_id], "walking", place[:result][:geometry][:location]), class:"card-link", target: :_blank %>
-        </div>
-      </div>
-    <% end %>
-  </div>
-</div>
-  </div>
-
 </div>

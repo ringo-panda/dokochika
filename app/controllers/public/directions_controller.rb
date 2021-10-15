@@ -69,7 +69,7 @@ class Public::DirectionsController < ApplicationController
       end
     end
     #検索結果をソートする
-    @driving_results_sort = @driving_results.sort_by {|a| a[:routes][0][:legs][0][:duration_in_traffic][:value].to_i }
+    @driving_results_sort = @driving_results.sort_by {|a| a[:routes][0][:legs][0][:duration][:value].to_i }
     @walking_results_sort = @walking_results.sort_by {|a| a[:routes][0][:legs][0][:duration][:value].to_i }
     @bicycling_results_sort = @bicycling_results.sort_by {|a| a[:routes][0][:legs][0][:duration][:value].to_i }
   end

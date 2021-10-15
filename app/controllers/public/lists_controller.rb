@@ -2,9 +2,6 @@ class Public::ListsController < ApplicationController
     before_action :authenticate_user!
     before_action :correct_user, only: [:show, :edit, :update, :destroy]
 
-  def new
-
-  end
 
   def index
     @lists = List.where(user_id:current_user.id)
@@ -29,7 +26,6 @@ class Public::ListsController < ApplicationController
 
   def show
     @list = List.find(params[:id])
-    @spots = @list.spots
   end
 
   def update
@@ -39,7 +35,7 @@ class Public::ListsController < ApplicationController
       redirect_to list_path(@list)
     else
       flash[:alert] = "保存に失敗しました"
-      render 'edit'
+      render 'show'
     end
   end
 
