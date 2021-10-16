@@ -1,13 +1,13 @@
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <nav class="navbar navbar-expand-md navbar-light bg-light">
         <div class="container">
           <% if user_signed_in? %>
-            <%= link_to "DOKOCHIKA", new_spot_path, class:"navbar-brand fs-2 far fa-compass text-info" %>
+            <%= link_to "DOKOCHIKA", spots_path, class:"navbar-brand fs-2 far fa-compass text-info" %>
           <% elsif admin_admin_user_signed_in? %>
             <%= link_to "DOKOCHIKA", admin_users_path, class:"navbar-brand fs-2 far fa-compass text-info" %>
           <% else %>
             <%= link_to "DOKOCHIKA", root_path, class:"navbar-brand fs-2 far fa-compass text-info" %>
           <% end %>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
 
