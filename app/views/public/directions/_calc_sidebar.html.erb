@@ -116,6 +116,8 @@ function onPlaceChanged() {
           <%= f.datetime_field :departure_datetime, id:"departure_datetime", class:"form-control" %>
         <% end %>
       <% end %>
+      <div class="form-text text-danger">※現在以降の日時を入力してください。</div>
+      <div class="form-text text-danger">※未入力の場合現在時刻に設定されます。</div>
     </div>
     <div class="form-check form-switch mb-2">
       <% if param.present? && param[:avoid_tolls] == "1" %>
@@ -158,8 +160,8 @@ function onPlaceChanged() {
       <% end %>
     </div>
     <div class="mb-3">
-    <%= f.submit "所要時間を一括計算する", class:"btn btn-primary col-12" %>
-    <div class="form-text text-danger">※出発地は自動入力された緯度、経度を元に計算されます。</div>
+      <%= f.submit "所要時間を一括計算する", class:"btn btn-primary col-12" %>
+      <div class="form-text text-danger">※出発地は自動入力された緯度、経度を元に計算されます。</div>
     </div>
   <% end %>
 </div>
