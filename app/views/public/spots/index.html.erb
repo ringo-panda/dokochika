@@ -78,7 +78,7 @@
           <div class="card-footer bg-transparent">
             <% @spot = judge_present_place(spot[:place_id]) %>
             <% if @spot == nil %>
-            <%= link_to "登録", new_spot_path(spot[:place_id]), class:"w-100 btn btn-primary btn-block" %>
+            <%= link_to "登録", new_spot_path(place_id: spot[:place_id]), class:"w-100 btn btn-primary btn-block" %>
             <% else %>
             <%= link_to "編集", edit_spot_path(@spot), class:"w-100 btn btn-primary btn-success" %>
             <% end %>

@@ -50,6 +50,7 @@ class Public::DirectionsController < ApplicationController
     @walking_results = []
     @bicycling_results = []
     @modes = ["bicycling", "walking", "driving"]
+    count = 0
     @modes.each do |mode|
       query.store(:mode, mode)
       @spots.each do |spot|
@@ -58,7 +59,8 @@ class Public::DirectionsController < ApplicationController
         response = client.get(url, query: query)
         result = JSON.parse(response.body, {symbolize_names: true})
         if result[:status] != "OK"
-          flash[:alert] = "#{spot.name}のルート検索を行うことができませんでした。"
+          count += 1
+          flash[:alert] = "#{count}件のルート検索でエラーが発生しました。"
         else
           if mode == "driving"
             @driving_results.push(result)

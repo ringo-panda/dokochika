@@ -9,6 +9,7 @@ class User < ApplicationRecord
   has_many :spots, dependent: :destroy
   has_many :list_spots, dependent: :destroy
 
+  validates :username, presence: true, length: { maximum: 250 }
 
   private
 

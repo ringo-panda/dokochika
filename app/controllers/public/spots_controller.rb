@@ -1,9 +1,9 @@
 class Public::SpotsController < ApplicationController
   before_action :authenticate_user!
   before_action :correct_user, only: [:show, :edit, :update, :destroy]
-  
+
   def new
-    @place_id = params[:format]
+    @place_id = params[:place_id]
     @result = place_details(@place_id)
     if @result[:status] != "OK"
       flash[:alert] = @result[:error_message]
@@ -19,22 +19,27 @@ class Public::SpotsController < ApplicationController
   def create
     @spots = Spot.where(user_id:current_user.id)
     @spot = Spot.new(spot_params)
-    lists = params[:spot][:lists]
-    if @spot.save
-      lists.each do |list_id|
-        if list_id.present?
-          join = ListSpot.new(user_id:current_user.id, spot_id:@spot.id, list_id:list_id.to_i)
-          unless join.save
-            flash[:notice] = "保存に失敗しました"
-            redirect_to spots_path
+    if params[:spot][:lists].present?
+      lists = params[:spot][:lists]
+      if @spot.save
+        lists.each do |list_id|
+          if list_id.present?
+            join = ListSpot.new(user_id:current_user.id, spot_id:@spot.id, list_id:list_id.to_i)
+            unless join.save
+              flash[:notice] = "保存に失敗しました"
+              redirect_to spots_path and return
+            end
           end
         end
+        flash[:notice] = "保存に成功しました"
+        redirect_to spots_path and return
+      else
+        flash[:notice] = "保存に失敗しました"
+        render "index"
       end
-      flash[:notice] = "保存に成功しました"
-      redirect_to spots_path
     else
-      flash[:notice] = "保存に失敗しました"
-      render "index"
+      flash[:alert] = "リストが選択されていません"
+      redirect_to spots_path and return
     end
   end
 
@@ -85,12 +90,15 @@ class Public::SpotsController < ApplicationController
 
 
   def search
+    if params[:search_keyword].blank?
+      flash[:notice] = "検索ワードを入力してください"
+      redirect_to spots_path and return
+    end
     @result_spots = place_text_search(params[:search_keyword])
     if @result_spots[:status] != "OK"
       flash[:alert] = @result_spots[:error_message]
     end
     render 'index'
-
   end
 
   private
