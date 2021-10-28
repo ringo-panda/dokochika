@@ -10,7 +10,7 @@
           <% end %>
           <%= result[:routes][0][:legs][0][:duration][:text] %>（
           <%= result[:routes][0][:legs][0][:distance][:text] %>）
-
+          <small class="text-muted"><%= calc_arrival_time(@param[:departure_datetime], result[:routes][0][:legs][0][:duration][:value]) %></small>
         </h5>
         <div class="card-body">
           <h5 class="card-title">

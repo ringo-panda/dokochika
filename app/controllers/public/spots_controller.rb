@@ -1,9 +1,7 @@
 class Public::SpotsController < ApplicationController
   before_action :authenticate_user!
   before_action :correct_user, only: [:show, :edit, :update, :destroy]
-
-  require 'httpclient'
-
+  
   def new
     @place_id = params[:format]
     @result = place_details(@place_id)

@@ -13,8 +13,10 @@ module ApplicationHelper
   end
 
   def calc_arrival_time(departure_time, value)
-    arrival_time_serial_num = departure_time + value
-    arrival_time = Time.zone.at(arrival_time_serial_num).strftime('%m/%d %H時%M分着')
+    if departure_time.blank?
+      departure_time = Time.now.to_s
+    end
+    arrival_time = Time.zone.at(Time.parse(departure_time).to_i + value).strftime('%m/%d %H時%M分着')
     return arrival_time
   end
 

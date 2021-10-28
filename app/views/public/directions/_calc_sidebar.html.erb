@@ -112,9 +112,9 @@ function onPlaceChanged() {
       <% if param.present? %>
         <% if param[:departure_datetime].present? %>
           <%= f.datetime_field :departure_datetime, value:param[:departure_datetime], id:"departure_datetime", class:"form-control" %>
+        <% else %>
+          <%= f.datetime_field :departure_datetime, id:"departure_datetime", class:"form-control" %>
         <% end %>
-      <% else %>
-        <%= f.datetime_field :departure_datetime, id:"departure_datetime", class:"form-control" %>
       <% end %>
     </div>
     <div class="form-check form-switch mb-2">

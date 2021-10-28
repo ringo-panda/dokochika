@@ -1,4 +1,6 @@
 class Public::DirectionsController < ApplicationController
+  before_action :authenticate_user!
+  before_action :correct_user, only: [:calculate]
 
   def calculate
     #リクエスト用のクエリパラメータの作成
@@ -34,8 +36,8 @@ class Public::DirectionsController < ApplicationController
       query.store(:avoid, parameter[:avoid])
     end
     if params[:departure_datetime].present?
-      departure_datetime = DateTime.parse(params[:departure_datetime])
-      if departure_datetime >= DateTime.now
+      departure_datetime = Time.parse(params[:departure_datetime])
+      if departure_datetime >= Time.now
         parameter[:departure_datetime] = departure_datetime.to_i
         query.store(:departure_time, parameter[:departure_datetime])
       else
@@ -74,7 +76,15 @@ class Public::DirectionsController < ApplicationController
     @bicycling_results_sort = @bicycling_results.sort_by {|a| a[:routes][0][:legs][0][:duration][:value].to_i }
   end
 
-  def index
+
+  private
+
+  def correct_user
+    @list = List.find(params[:list_id])
+    if @list.user.id != current_user.id
+      flash[:alert] = "このURLは無効です"
+      redirect_to root_path
+    end
   end
 
 end
