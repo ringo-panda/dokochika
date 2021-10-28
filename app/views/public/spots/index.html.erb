@@ -1,6 +1,6 @@
 <div class="row mb-3">
   <%= form_with url:search_spots_path, method: :get, local: true do |f| %>
-    <%= f.text_field :search_keyword, id:"autocomplete", placeholder: "スポットを検索", class:"offset-md-2 col-md-4 col-7 offset-col-2" %>
+    <%= f.text_field :search_keyword, id:"autocomplete", placeholder: "スポットを検索", class:"offset-md-2 col-md-4 col-8 offset-col-2" %>
     <%= f.submit "検索", class:"btn btn-primary col-md-1 ms-2 col-2" %>
   <% end %>
 </div>

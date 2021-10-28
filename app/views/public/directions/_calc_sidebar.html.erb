@@ -109,12 +109,10 @@ function onPlaceChanged() {
     </div>
     <div class="mb-2">
       <%= f.label :departure_datetime, "出発日時", for:"departure_datetime", class:"form-label" %>
-      <% if param.present? %>
-        <% if param[:departure_datetime].present? %>
-          <%= f.datetime_field :departure_datetime, value:param[:departure_datetime], id:"departure_datetime", class:"form-control" %>
-        <% else %>
-          <%= f.datetime_field :departure_datetime, id:"departure_datetime", class:"form-control" %>
-        <% end %>
+      <% if param.present? && param[:departure_datetime].present? %>
+        <%= f.datetime_field :departure_datetime, value:param[:departure_datetime], id:"departure_datetime", class:"form-control" %>
+      <% else %>
+        <%= f.datetime_field :departure_datetime, id:"departure_datetime", class:"form-control" %>
       <% end %>
       <div class="form-text text-danger">※現在以降の日時を入力してください。</div>
       <div class="form-text text-danger">※未入力の場合現在時刻に設定されます。</div>
